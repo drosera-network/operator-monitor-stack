@@ -1,0 +1,52 @@
+extensions:
+  basicauth/server:
+    htpasswd:
+      inline: |
+        ${env:BASIC_AUTH_USERNAME}:${env:BASIC_AUTH_PASSWORD}
+
+receivers:
+  otlp/auth:
+    protocols:
+      grpc:
+        auth:
+          authenticator: basicauth/server
+        endpoint: 0.0.0.0:4317
+      http:
+        auth:
+          authenticator: basicauth/server
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+
+exporters:
+  debug:
+    verbosity: detailed
+  
+  prometheus:
+    endpoint: 0.0.0.0:8889
+
+  otlp:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+
+  otlphttp:
+    endpoint: http://loki:3100/otlp
+    
+
+service:
+  extensions: [basicauth/server]
+  pipelines:
+    metrics:
+      receivers: [otlp/auth]
+      processors: [batch]
+      exporters: [prometheus, debug]
+    traces:
+      receivers: [otlp/auth]
+      processors: [batch]
+      exporters: [otlp, debug]
+    logs:
+      receivers: [otlp/auth]
+      processors: [batch]
+      exporters: [otlphttp, debug]
