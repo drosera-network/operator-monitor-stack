@@ -29,8 +29,8 @@ services:
     ports:
       - "4317:4317"
     environment:
-      - BASIC_AUTH_USERNAME=admin
-      - BASIC_AUTH_PASSWORD=drosera
+      - BASIC_AUTH_USERNAME=${BASIC_AUTH_USERNAME}
+      - BASIC_AUTH_PASSWORD=${BASIC_AUTH_PASSWORD}
 
   prometheus:
     image: prom/prometheus:latest
