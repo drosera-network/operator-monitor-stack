@@ -8,3 +8,8 @@ scrape_configs:
     scheme: http
     static_configs:
     - targets: ['otel-collector:8889'] # using the name of the OpenTelemetryCollector container defined in the docker compose file
+
+storage:
+  tsdb:
+    retention:
+      time: 164h
